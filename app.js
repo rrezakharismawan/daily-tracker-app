@@ -342,7 +342,49 @@ if (btnAddLog) {
 
 
 // ============================================================
-// RENDER LOG
+// MENENTUKAN GROUP TASK
+// ============================================================
+
+function getTaskGroup(taskName) {
+
+  let currentGroup = 'TASK OTHER';
+
+  for (const [key, data] of Object.entries(CONFIG.DROPDOWN_B)) {
+
+    // Kalau ketemu separator, ubah group aktif
+    if (data.type === 'separator') {
+
+      const cleanLabel =
+        key.replace(/---/g, '').trim();
+
+      if (cleanLabel.includes('Task QC')) {
+        currentGroup = 'TASK QC';
+
+      } else if (cleanLabel.includes('Task Other')) {
+        currentGroup = 'TASK OTHER';
+
+      } else if (cleanLabel.includes('Task Analyze')) {
+        currentGroup = 'TASK ANALYZE';
+
+      } else if (cleanLabel.includes('Task Pure Poles')) {
+        currentGroup = 'TASK PURE POLES';
+      }
+
+      continue;
+    }
+
+    // Kalau task yang dicari ketemu
+    if (key === taskName) {
+      return currentGroup;
+    }
+  }
+
+  return 'TASK OTHER';
+}
+
+
+// ============================================================
+// RENDER LOG DENGAN GROUP
 // ============================================================
 
 function renderLogs() {
@@ -354,42 +396,104 @@ function renderLogs() {
     return;
   }
 
-  container.innerHTML = logsData.map(log => `
+  // ==========================================
+  // Buat 4 kelompok
+  // ==========================================
 
-    <div class="note-item">
+  const groupedLogs = {
+    'TASK QC': [],
+    'TASK OTHER': [],
+    'TASK ANALYZE': [],
+    'TASK PURE POLES': []
+  };
 
-      <span>
 
-        <strong>${log.waktu}</strong>
-        |
-        ${log.job}
-        |
-        ${log.dropdownA}
-        ${log.dropdownB}
+  // ==========================================
+  // Masukkan log ke group masing-masing
+  // ==========================================
 
-        (${log.mins} Menit)
+  logsData.forEach(log => {
 
-        <strong>${log.poles}</strong>
+    const group =
+      getTaskGroup(log.dropdownB);
 
-      </span>
+    if (!groupedLogs[group]) {
+      groupedLogs['TASK OTHER'].push(log);
+    } else {
+      groupedLogs[group].push(log);
+    }
+  });
 
-      <button
-        onclick="deleteLog(${log.id})"
-        style="
-          color:red;
-          border:none;
-          background:none;
-          cursor:pointer;
-        "
-      >
-        ❌
-      </button>
 
-    </div>
+  // ==========================================
+  // Render
+  // ==========================================
 
-  `).join('');
+  let html = '';
+
+
+  Object.entries(groupedLogs).forEach(
+    ([groupName, logs]) => {
+
+      // Kalau group kosong, jangan tampilkan
+      if (logs.length === 0) {
+        return;
+      }
+
+
+      html += `
+        <div class="notes-group">
+
+          <div class="notes-group-title">
+            ${groupName}
+            <span class="notes-group-count">
+              ${logs.length}
+            </span>
+          </div>
+
+          <div class="notes-group-list">
+      `;
+
+
+      logs.forEach(log => {
+
+        html += `
+          <div class="note-item">
+
+            <span>
+              <strong>${log.waktu}</strong>
+              |
+              ${log.job}
+              |
+              ${log.dropdownA}
+              ${log.dropdownB}
+              (${log.mins} Menit)
+              <strong>${log.poles}</strong>
+            </span>
+
+            <button
+              onclick="deleteLog(${log.id})"
+              class="delete-log-btn"
+            >
+              ❌
+            </button>
+
+          </div>
+        `;
+      });
+
+
+      html += `
+          </div>
+
+        </div>
+      `;
+    }
+  );
+
+
+  container.innerHTML = html;
 }
-
 
 // ============================================================
 // HAPUS LOG

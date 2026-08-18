@@ -562,3 +562,70 @@ body {
 
   background: #dbe3ec;
 }
+
+/* =========================================================
+   NOTES GROUP
+   ========================================================= */
+
+.notes-group {
+  margin-bottom: 14px;
+}
+
+.notes-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 6px 9px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.05em;
+
+  color: #334155;
+
+  background: #eef2f7;
+
+  border-left: 4px solid #2563eb;
+  border-radius: 5px;
+
+  margin-bottom: 6px;
+}
+
+.notes-group-count {
+  font-size: 10px;
+
+  color: #64748b;
+
+  background: #ffffff;
+
+  border: 1px solid #dbe3ec;
+
+  padding: 1px 6px;
+
+  border-radius: 10px;
+}
+
+.notes-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding-left: 8px;
+}
+
+.delete-log-btn {
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  color: #ef4444;
+
+  padding: 2px 5px;
+}
+
+.delete-log-btn:hover {
+  transform: scale(1.1);
+}
