@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Worklog & Progress Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- SECTION 1: DAILY PROGRESS BAR -->
+    <div class="card progress-section">
+<div class="progress-header">
+  <h2>Daily Progression</h2>
+
+<div class="header-info">
+
+  <div class="desktop-datetime">
+    <div id="desktop-date" class="desktop-date">
+      Jumat, 14 Agustus 2026
+    </div>
+
+    <div id="desktop-clock" class="desktop-clock">
+      00:00:00
+    </div>
+  </div>
+
+  <div class="progress-summary">
+
+    <div class="summary-item">
+      <span class="summary-label">TARGET</span>
+
+      <strong class="summary-value">
+        32 POLES
+      </strong>
+
+      <span class="summary-sub">
+        100%
+      </span>
+    </div>
+
+
+    <div class="summary-divider"></div>
+
+
+    <div class="summary-item">
+      <span class="summary-label">AKTIF</span>
+
+      <strong class="summary-value">
+        <span id="total-minutes-label">0</span>
+        MENIT
+      </strong>
+
+      <span class="summary-sub">
+        <span id="total-poles-label">0</span> POLES
+      </span>
+    </div>
+
+
+    <div class="summary-divider"></div>
+
+
+    <div class="summary-item">
+      <span class="summary-label">PROGRESS</span>
+
+      <strong
+        id="total-percent-label"
+        class="summary-progress"
+      >
+        0.00%
+      </strong>
+    </div>
+
+  </div>
+
+</div>
+
+     <!-- BARIS KOSONG / SPACING -->
+    <div class="section-spacer"></div>
+
+      <!-- Container Multi-Bar -->
+      <div class="progress-bar-wrapper">
+        <div id="bar-sekunder" class="bar bar-sekunder" style="width: 0%;">
+          <span id="label-sekunder">0%</span>
+        </div>
+        <div id="bar-murni" class="bar bar-murni" style="width: 0%;">
+          <span id="label-murni">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: GRID NOTES & TODAY TASK -->
+    <div class="main-grid">
+      
+      <!-- NOTES LOG OUTPUT -->
+      <div class="card notes-section">
+
+<div class="card-header">
+    <h3>Notes</h3>
+
+    <div class="notes-controls">
+        <button id="btn-clock">▶ Start/Stop</button>
+        <button id="btn-clock-pause">⏸ Pause</button>
+        <button id="btn-save-day" class="btn-save-day">💾 Simpan Hari</button>
+    </div>
+</div>
+
+        <div id="notes-list" class="notes-list">
+          <!-- Item Log akan muncul di sini -->
+        </div>
+      </div>
+
+      <!-- TODAY TASK NOTEPAD -->
+      <div class="card task-section">
+        <div class="card-header">
+          <h3>Today Task :</h3>
+          <div class="editor-toolbar">
+            <button onclick="execCmd('bold')"><b>B</b></button>
+            <button onclick="execCmd('italic')"><i>I</i></button>
+            <button onclick="execCmd('underline')"><u>U</u></button>
+            <button onclick="execCmd('strikeThrough')"><s>S</s></button>
+          </div>
+        </div>
+        <div id="today-task-editor" class="editor-content" contenteditable="true" placeholder="Tulis atau paste task di sini..."></div>
+      </div>
+
+    </div>
+
+ <!-- BARIS KOSONG / SPACING -->
+    <div class="section-spacer"></div>
+
+    <!-- SECTION 3: FORM INPUT LOG BARU -->
+    <div class="card input-section">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Waktu (HH.MM - HH.MM)</label>
+          <input type="text" id="input-waktu" placeholder="08.00 - 17.00">
+        </div>
+
+        <div class="form-group">
+          <label>Job ID</label>
+          <input type="text" id="input-job" placeholder="Nomor Job">
+        </div>
+
+        <div class="form-group">
+          <label>Clients</label>
+          <select id="select-dropdown-a"></select>
+        </div>
+
+        <div class="form-group">
+          <label>Task (Pilih Menu ini terlebih dahulu)</label>
+          <select id="select-dropdown-b"></select>
+        </div>
+
+        <div class="form-group readonly">
+          <label>Kalkulasi Durasi</label>
+          <input type="text" id="calc-durasi" readonly placeholder="0 Menit">
+        </div>
+
+        <div class="form-group readonly">
+          <label>Nilai Poles (Hasil)</label>
+          <input type="text" id="calc-poles" readonly placeholder="0">
+        </div>
+
+        <button id="btn-add-log" class="btn-primary">Tambah Log</button>
+      </div>
+    </div>
+
+     <!-- BARIS KOSONG / SPACING -->
+    <div class="section-spacer"></div>
+
+    <!-- SECTION 4: LOCAL HISTORY -->
+    <div class="card history-section">
+      <div class="card-header">
+        <h3>History</h3>
+        <div class="history-actions">
+          <span class="history-note">Data tersimpan offline di PC ini</span>
+          <button id="btn-export-excel" class="btn-history btn-export-excel">📊 Excel</button>
+          <button id="btn-delete-all-history" class="btn-history btn-delete-all-history">🗑 Hapus Semua</button>
+        </div>
+      </div>
+
+      <div class="history-periods">
+        <div class="history-period">
+          <div class="history-period-title">MINGGU INI</div>
+          <div id="history-week-summary" class="history-period-summary">0 Hari | 0 Menit | 0 Pole | Rata-rata 0%</div>
+        </div>
+
+        <div class="history-period">
+          <div class="history-period-title">BULAN INI</div>
+          <div id="history-month-summary" class="history-period-summary">0 Hari | 0 Menit | 0 Pole | Rata-rata 0%</div>
+        </div>
+      </div>
+
+      <div id="history-list" class="history-list">
+        <div class="history-empty">Belum ada hari yang disimpan.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
