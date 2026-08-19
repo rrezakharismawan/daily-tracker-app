@@ -50,7 +50,11 @@ function initDropdowns() {
 
   const options = Object.entries(CONFIG.DROPDOWN_B);
 
-  let html = '';
+  let html = `
+    <option value="" selected disabled>
+      -- Pilih Task Terlebih Dahulu --
+    </option>
+  `;
   let currentGroup = null;
 
   options.forEach(([key, data]) => {
@@ -250,7 +254,7 @@ const inputWaktu = document.getElementById('input-waktu');
 
 if (inputWaktu) {
 
-  inputWaktu.addEventListener('input', function(e) {
+  inputWaktu.oninput = function(e) {
 
     const val = e.target.value.trim();
 
@@ -287,21 +291,60 @@ if (inputWaktu) {
       const selectB =
         document.getElementById('select-dropdown-b');
 
-      if (selectB && CONFIG.DROPDOWN_B[selectB.value]) {
-
-        const selectedB = selectB.value;
-
-        const divider =
-          CONFIG.DROPDOWN_B[selectedB]?.divider || 15;
-
-        const poles = mins / divider;
+      // Task wajib dipilih sebelum Pole bisa dihitung.
+      if (!selectB || !selectB.value) {
 
         if (polesField) {
-          polesField.value = poles;
+          polesField.value = '';
         }
+
+        return;
+      }
+
+      const taskConfig =
+        CONFIG.DROPDOWN_B[selectB.value];
+
+      if (
+        !taskConfig ||
+        taskConfig.type === 'separator' ||
+        !taskConfig.divider ||
+        taskConfig.divider <= 0
+      ) {
+
+        if (polesField) {
+          polesField.value = '';
+        }
+
+        return;
+      }
+
+      const poles =
+        mins / taskConfig.divider;
+
+      if (polesField) {
+        polesField.value = poles;
       }
     }
-  });
+  };
+}
+
+
+// ============================================================
+// TASK BERUBAH → HITUNG ULANG OTOMATIS
+// ============================================================
+
+const selectTask =
+  document.getElementById('select-dropdown-b');
+
+if (selectTask) {
+
+  selectTask.onchange = () => {
+
+    if (inputWaktu) {
+      inputWaktu.dispatchEvent(new Event('input'));
+    }
+
+  };
 }
 
 
@@ -314,7 +357,7 @@ const btnAddLog =
 
 if (btnAddLog) {
 
-  btnAddLog.addEventListener('click', () => {
+  btnAddLog.onclick = () => {
 
     const waktu =
       document.getElementById('input-waktu')?.value.trim();
@@ -330,6 +373,19 @@ if (btnAddLog) {
 
     const durasiText =
       document.getElementById('calc-durasi')?.value;
+
+    // Task wajib dipilih terlebih dahulu.
+    const taskConfig =
+      CONFIG.DROPDOWN_B[dropdownB];
+
+    if (
+      !dropdownB ||
+      !taskConfig ||
+      taskConfig.type === 'separator'
+    ) {
+      alert('Silakan pilih Task terlebih dahulu.');
+      return;
+    }
 
     const poles =
       parseFloat(
@@ -379,7 +435,7 @@ if (btnAddLog) {
     document.getElementById('input-job').value = '';
     document.getElementById('calc-durasi').value = '';
     document.getElementById('calc-poles').value = '';
-  });
+  };
 }
 
 
@@ -393,35 +449,24 @@ function getTaskGroup(taskName) {
 
   for (const [key, data] of Object.entries(CONFIG.DROPDOWN_B)) {
 
-    // Kalau ketemu separator, ubah group aktif
     if (data.type === 'separator') {
 
-      const cleanLabel =
-        key.replace(/---/g, '').trim();
+      let groupName = key
+        .replace(/^---/, '')
+        .replace(/---$/, '')
+        .trim();
 
-      if (cleanLabel.includes('Task QC')) {
-        currentGroup = 'TASK QC';
-
-      } else if (cleanLabel.includes('Task Other')) {
-        currentGroup = 'TASK OTHER';
-
-      } else if (cleanLabel.includes('Task Analyze')) {
-        currentGroup = 'TASK ANALYZE';
-
-      } else if (cleanLabel.includes('Task Pure Poles')) {
-        currentGroup = 'TASK PURE POLES';
-      }
-
+      groupName = groupName.replace(/^Select\s+/i, '');
+      currentGroup = groupName.toUpperCase();
       continue;
     }
 
-    // Kalau task yang dicari ketemu
     if (key === taskName) {
       return currentGroup;
     }
   }
 
-  return 'TASK OTHER';
+  return currentGroup;
 }
 
 
@@ -470,21 +515,11 @@ function renderLogs() {
   // BUAT 4 KELOMPOK
   // ==========================================================
 
-  const groupedLogs = {
-
-    'TASK QC': [],
-
-    'TASK OTHER': [],
-
-    'TASK ANALYZE': [],
-
-    'TASK PURE POLES': []
-
-  };
+  const groupedLogs = {};
 
 
   // ==========================================================
-  // MASUKKAN LOG KE GROUP
+  // MASUKKAN LOG KE GROUP SECARA DINAMIS
   // ==========================================================
 
   logsData.forEach(log => {
@@ -493,14 +528,10 @@ function renderLogs() {
       getTaskGroup(log.dropdownB);
 
     if (!groupedLogs[group]) {
-
-      groupedLogs['TASK OTHER'].push(log);
-
-    } else {
-
-      groupedLogs[group].push(log);
-
+      groupedLogs[group] = [];
     }
+
+    groupedLogs[group].push(log);
 
   });
 
