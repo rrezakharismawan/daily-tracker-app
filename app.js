@@ -1684,3 +1684,78 @@ setInterval(
   updateDesktopClock,
   1000
 );
+
+// ============================================================
+// V5 AMBIENT BACKGROUND INTERACTION
+// Mouse / pointer parallax + gentle idle movement.
+// No external library required.
+// ============================================================
+
+(function initAmbientBackground() {
+  const root = document.documentElement;
+
+  // Respect reduced-motion preference and avoid running on touch-only devices.
+  const reduceMotion =
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const hasFinePointer =
+    window.matchMedia &&
+    window.matchMedia('(pointer: fine)').matches;
+
+  if (!root || reduceMotion || !hasFinePointer) {
+    return;
+  }
+
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let rafId = null;
+
+  function render() {
+    currentX += (targetX - currentX) * 0.055;
+    currentY += (targetY - currentY) * 0.055;
+
+    root.style.setProperty('--ambient-mx', currentX.toFixed(2));
+    root.style.setProperty('--ambient-my', currentY.toFixed(2));
+
+    if (
+      Math.abs(targetX - currentX) > 0.02 ||
+      Math.abs(targetY - currentY) > 0.02
+    ) {
+      rafId = requestAnimationFrame(render);
+    } else {
+      rafId = null;
+    }
+  }
+
+  function wake() {
+    if (rafId === null) {
+      rafId = requestAnimationFrame(render);
+    }
+  }
+
+  window.addEventListener('pointermove', (event) => {
+    const x = (event.clientX / window.innerWidth) - 0.5;
+    const y = (event.clientY / window.innerHeight) - 0.5;
+
+    targetX = Math.max(-18, Math.min(18, x * 36));
+    targetY = Math.max(-18, Math.min(18, y * 36));
+
+    wake();
+  }, { passive: true });
+
+  window.addEventListener('pointerleave', () => {
+    targetX = 0;
+    targetY = 0;
+    wake();
+  }, { passive: true });
+
+  // Slight settling on resize.
+  window.addEventListener('resize', () => {
+    targetX *= 0.5;
+    targetY *= 0.5;
+    wake();
+  }, { passive: true });
+})();
