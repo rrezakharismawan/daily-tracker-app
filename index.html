@@ -75,6 +75,9 @@
 
 </div>
 
+     <!-- BARIS KOSONG / SPACING -->
+    <div class="section-spacer"></div>
+
       <!-- Container Multi-Bar -->
       <div class="progress-bar-wrapper">
         <div id="bar-sekunder" class="bar bar-sekunder" style="width: 0%;">
@@ -98,6 +101,7 @@
     <div class="notes-controls">
         <button id="btn-clock">▶ Start/Stop</button>
         <button id="btn-clock-pause">⏸ Pause</button>
+        <button id="btn-save-day" class="btn-save-day">💾 Simpan Hari</button>
     </div>
 </div>
 
@@ -121,6 +125,9 @@
       </div>
 
     </div>
+
+ <!-- BARIS KOSONG / SPACING -->
+    <div class="section-spacer"></div>
 
     <!-- SECTION 3: FORM INPUT LOG BARU -->
     <div class="card input-section">
@@ -156,6 +163,37 @@
         </div>
 
         <button id="btn-add-log" class="btn-primary">Tambah Log</button>
+      </div>
+    </div>
+
+     <!-- BARIS KOSONG / SPACING -->
+    <div class="section-spacer"></div>
+
+    <!-- SECTION 4: LOCAL HISTORY -->
+    <div class="card history-section">
+      <div class="card-header">
+        <h3>History</h3>
+        <div class="history-actions">
+          <span class="history-note">Data tersimpan offline di PC ini</span>
+          <button id="btn-export-excel" class="btn-history btn-export-excel">📊 Excel</button>
+          <button id="btn-delete-all-history" class="btn-history btn-delete-all-history">🗑 Hapus Semua</button>
+        </div>
+      </div>
+
+      <div class="history-periods">
+        <div class="history-period">
+          <div class="history-period-title">MINGGU INI</div>
+          <div id="history-week-summary" class="history-period-summary">0 Hari | 0 Menit | 0 Pole | Rata-rata 0%</div>
+        </div>
+
+        <div class="history-period">
+          <div class="history-period-title">BULAN INI</div>
+          <div id="history-month-summary" class="history-period-summary">0 Hari | 0 Menit | 0 Pole | Rata-rata 0%</div>
+        </div>
+      </div>
+
+      <div id="history-list" class="history-list">
+        <div class="history-empty">Belum ada hari yang disimpan.</div>
       </div>
     </div>
 
